@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Check if input arguments are provided
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <input_pdf file> <number_of_pdfs that you want>"
+    exit 1
+fi
+
+# Separate input PDF into individual pages
+pdfseparate "$1" output_%d.pdf
+
+# Assign the number of PDFs to create
+n="$2"
+
+# Iterate over the number of PDFs to create
+for (( i=0; i<n; i++ )); do
+    pdfunite output_$((i*3+1)).pdf output_$((i*3+2)).pdf output_$((i*3+3)).pdf Agreement$((i+1)).pdf
+done
+
+# Delete files
+rm -rf output_*
+
+# Create new directory if it doesn't exist
+mkdir -p Agreement_dir
+
+# Move created PDFs to the new directory
+mv Agreement* Agreement_dir/
+
+# Change directory to 'new'
+cd Agreement_dir
+
+# Optional: Print list of files in 'Agreement_dir' directory
+ls -l
